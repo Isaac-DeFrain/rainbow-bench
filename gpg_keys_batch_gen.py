@@ -16,12 +16,12 @@ KEYS_DIR = Path.cwd() / 'keys'
 
 # TODO key lengths
 keys = {
-    'RSA'   : {'min': 1024, 'max': 4096},
-    'ELG'   : {'min': 1024, 'max': 4096},
-    'DSA'   : {'min': 1024, 'max': 4096},
-    'ECDH'  : {'min': 1024, 'max': 4096},
-    'ECDSA' : {'min': 1024, 'max': 4096},
-    'EDDSA' : {'min': 1024, 'max': 4096}
+    'RSA'   : [1024, 2048, 3072, 4096],
+    'ELG'   : [1024, 2048, 3072, 4096],
+    'DSA'   : [1024, 2048, 3072, 4096],
+    'ECDH'  : [1024, 2048, 3072, 4096],
+    'ECDSA' : [1024, 2048, 3072, 4096],
+    'EDDSA' : [1024, 2048, 3072, 4096],
 }
 
 def create_file(fpath: Path):
@@ -85,11 +85,9 @@ def key_gen(fpath: Path):
 # generate key files
 
 for key_type in keys.keys():
-    for n in range(NUM_KEYS):
-        min_len = keys[key_type]['min']
-        max_len = keys[key_type]['max']
-        key_gen_file(key_type, min_len, n)
-        key_gen_file(key_type, max_len, n)
+    for num in range(NUM_KEYS):
+        for key_len in keys[key_type]:
+            key_gen_file(key_type, key_len, num)
 
 # generate keys from files
 
