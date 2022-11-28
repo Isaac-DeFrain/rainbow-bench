@@ -2,10 +2,11 @@
 Benchmark GPG unattended batch key generation
 '''
 
-import timeit
+from timeit import timeit
 from os import system, listdir
 from secrets import token_hex
 from pathlib import Path
+from json import dumps
 
 # parameters
 
@@ -17,11 +18,11 @@ KEYS_DIR = Path.cwd() / 'keys'
 # TODO key lengths
 keys = {
     'RSA'   : [1024, 2048, 3072, 4096],
-    'ELG'   : [1024, 2048, 3072, 4096],
-    'DSA'   : [1024, 2048, 3072, 4096],
-    'ECDH'  : [1024, 2048, 3072, 4096],
-    'ECDSA' : [1024, 2048, 3072, 4096],
-    'EDDSA' : [1024, 2048, 3072, 4096],
+#    'ELG'   : [1024, 2048, 3072, 4096],
+#    'DSA'   : [1024, 2048, 3072, 4096],
+#    'ECDH'  : [1024, 2048, 3072, 4096],
+#    'ECDSA' : [1024, 2048, 3072, 4096],
+#    'EDDSA' : [1024, 2048, 3072, 4096],
 }
 
 def create_file(fpath: Path):
@@ -93,10 +94,21 @@ for key_type in keys.keys():
 
 key_dirs = filter(is_key_dir, listdir(KEYS_DIR))
 
-# TODO benchmark
+times = {}
 
 for dir_name in key_dirs:
     path = KEYS_DIR / dir_name
     key_files = listdir(path)
-    for key_file in key_files:
-        key_gen(path / key_file)
+    groups = map(lambda n: (n, filter(lambda fname: fname.split("_")[1] == str(n), key_files)), keys[dir_name])
+    times_n = []
+    for n, key_files in groups:
+        for key_file in key_files:
+            times_n.append(timeit(lambda: key_gen(path / key_file), number=1))
+        times[n] = times_n
+    fpath = KEYS_DIR / f"{dir_name}_stats.json"
+    if not fpath.exists():
+        system(f"touch {fpath}")
+    with fpath.open("w") as f:
+        f.write(dumps(times, indent=4))
+        f.close()
+
