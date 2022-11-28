@@ -10,7 +10,7 @@ from json import dumps
 
 # parameters
 
-NUM_KEYS = 1
+NUM_KEYS = 3
 KEYS_DIR = Path.cwd() / 'keys'
 
 # key generation utils
@@ -19,7 +19,7 @@ KEYS_DIR = Path.cwd() / 'keys'
 keys = {
     'RSA'   : [1024, 2048, 3072, 4096],
 #    'ELG'   : [1024, 2048, 3072, 4096],
-#    'DSA'   : [1024, 2048, 3072, 4096],
+    'DSA'   : [1024, 2048, 3072, 4096],
 #    'ECDH'  : [1024, 2048, 3072, 4096],
 #    'ECDSA' : [1024, 2048, 3072, 4096],
 #    'EDDSA' : [1024, 2048, 3072, 4096],
@@ -98,17 +98,18 @@ times = {}
 
 for dir_name in key_dirs:
     path = KEYS_DIR / dir_name
-    key_files = listdir(path)
-    groups = map(lambda n: (n, filter(lambda fname: fname.split("_")[1] == str(n), key_files)), keys[dir_name])
-    times_n = []
+    keyfiles = listdir(path)
+    groups = map(lambda n: (n, list(filter(lambda fname: fname.split("_")[1] == str(n), keyfiles))), keys[dir_name])
     for n, key_files in groups:
         for key_file in key_files:
-            times_n.append(timeit(lambda: key_gen(path / key_file), number=1))
-        times[n] = times_n
+            try: 
+                times[n]
+            except KeyError:
+                times[n] = []
+            times[n].append(timeit(lambda: key_gen(path / key_file), number=1))
     fpath = KEYS_DIR / f"{dir_name}_stats.json"
     if not fpath.exists():
         system(f"touch {fpath}")
     with fpath.open("w") as f:
         f.write(dumps(times, indent=4))
         f.close()
-

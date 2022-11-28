@@ -16,4 +16,5 @@ def write_file(fname:str, contents: bytes):
 for i in range(NUM_DATA):
     size = i * 100 + 100
     fname = f"{i}_{size}"
-    write_file(fname, os.urandom(size))
+    write_file(fname, os.urandom(size).hex())
+    
