@@ -1,2 +1,5 @@
 .vscode
 /keys
+/sigs
+/data
+/__pycache__
