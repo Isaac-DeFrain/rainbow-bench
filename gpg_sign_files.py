@@ -5,9 +5,8 @@ from timeit import timeit
 SIGS_DIR = Path.cwd() / "sigs"
 DATA_DIR = Path.cwd() / "data"
 KEYS_DIR = Path.cwd() / "keys"
-
-data = sorted(listdir(DATA_DIR))
 all_keys_path = KEYS_DIR / "all_keys"
+data = sorted(listdir(DATA_DIR))
 
 #### Ensure only keys needed are available in key ring; TODO: trustdb
 
@@ -30,10 +29,10 @@ def get_key_IDs() -> "list[str]":
 
 #### TODO: Get password from key file, add password argument to sign
 
-keys = get_key_IDs()
+key_ids = get_key_IDs()
 
-def sign(fname: str, key_ID: str):
-    system(f"gpg -u {key_ID} -o ./sigs/{fname}.sig --sign ./data/{fname}")
+def sign(fname: str, key_ID: str, sig_path: str, pwd: str):
+    system(f"gpg --batch -u {key_ID} -o {sig_path} --passphrase {pwd} --sign ./data/{fname}")
 
 #### TODO: Give the key to clear-sign 
 
@@ -41,9 +40,9 @@ if not SIGS_DIR.exists():
     system(f"mkdir {SIGS_DIR}")
 
 for datum in data:
-    for key in keys:
-        timeit(lambda: sign(datum, key), number = 1)
+    for key_id in key_ids:
+        pwd = "" # TODO
+        sig_path = f"./sigs/{get_key_type(key_id)}/{datum}.sig"
+        timeit(lambda: sign(datum, key_id, sig_path, pwd), number = 1)
 
 #### TODO: sign/verify in right directory; GPG DSA key sizes
-
-
