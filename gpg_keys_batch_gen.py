@@ -32,9 +32,9 @@ def create_file(fpath: Path):
     '''
     # file
     if not fpath.exists():
-        # alog dir
+        # key type dir
         if not fpath.parent.exists():
-            # keys dir
+            # all keys dir
             if not fpath.parent.parent.exists():
                 system(f'mkdir {fpath.parent.parent}')
             system(f'mkdir {fpath.parent}')
