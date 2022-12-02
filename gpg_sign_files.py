@@ -39,14 +39,10 @@ def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
         key_paths = [KEYS_DIR / get_key_type(key_file) / key_file for key_file in key_files]
     return list(zip(key_ids, key_paths))
 
-#### TODO: Get password from key file, add password argument to sign
-
 key_ids_and_paths = get_key_ids_and_paths()
 
-def sign(fname: str, key_id: str, sig_path: str, pwd: str):
+def sign(fname: str, key_id: str, sig_path: Path, pwd: str):
     system(f"gpg --batch -u {key_id} -o {sig_path} --passphrase {pwd} --sign {DATA_DIR / fname}")
-
-#### TODO: Give the key to clear-sign 
 
 if not SIGS_DIR.exists():
     system(f"mkdir {SIGS_DIR}")
@@ -55,7 +51,9 @@ for datum in data:
     for key_id, key_path in key_ids_and_paths:
         with key_path.open("r", encoding="utf-8") as f:
             pwd = get_pwd(f.readlines())
-        sig_path = f"./sigs/{get_key_type(key_path.name)}/{datum}.sig"
+        sig_path = SIGS_DIR / get_key_type(key_path.name) / f"{datum}.sig"
+        if not sig_path.parent.exists():
+            system(f"mkdir {sig_path.parent}")
         timeit(lambda: sign(datum, key_id, sig_path, pwd), number = 1)
 
 #### TODO: sign/verify in right directory; GPG DSA key sizes
