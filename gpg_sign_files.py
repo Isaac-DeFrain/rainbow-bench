@@ -1,10 +1,8 @@
 from os import system, listdir
 from pathlib import Path
 from timeit import timeit
+from constants import DATA_DIR, KEYS_DIR, SIGS_DIR
 
-SIGS_DIR = Path.cwd() / "sigs"
-DATA_DIR = Path.cwd() / "data"
-KEYS_DIR = Path.cwd() / "keys"
 all_keys_path = KEYS_DIR / "all_keys"
 
 data = sorted(listdir(DATA_DIR))
