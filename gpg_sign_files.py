@@ -51,7 +51,7 @@ for datum in data:
     for key_id, key_path in key_ids_and_paths:
         with key_path.open("r", encoding="utf-8") as f:
             pwd = get_pwd(f.readlines())
-        sig_path = SIGS_DIR / get_key_type(key_path.name) / f"{datum}.sig"
+        sig_path = SIGS_DIR / get_key_type(key_path.name) / f"{key_path.name}-{datum}.sig"
         if not sig_path.parent.exists():
             system(f"mkdir {sig_path.parent}")
         timeit(lambda: sign(datum, key_id, sig_path, pwd), number = 1)
