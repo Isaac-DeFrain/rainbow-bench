@@ -1,6 +1,5 @@
-import gen_random_data
-import gpg_keys_batch_gen
-import gpg_sign_files
+from os import system
 
-#### TODO run the gen random data; then gpg keys batch; then gpg sign files code
-
+system("python gen_random_data.py")
+system("python gpg_keys_batch_gen.py")
+system("python gpg_sign_files.py")

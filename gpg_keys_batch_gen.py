@@ -10,14 +10,14 @@ from json import dumps
 
 # parameters
 
-NUM_KEYS = 3
+NUM_KEYS = 1
 KEYS_DIR = Path.cwd() / 'keys'
 
 # key generation utils
 
 # TODO key lengths
 keys = {
-    'RSA'   : [1024, 2048, 3072, 4096],
+#    'RSA'   : [1024, 2048, 3072, 4096],
 #    'ELG'   : [1024, 2048, 3072, 4096],
     'DSA'   : [896, 1024],
 #### TODO: actual sizes of DSA keys
