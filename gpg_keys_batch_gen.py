@@ -7,11 +7,7 @@ from os import system, listdir
 from secrets import token_hex
 from pathlib import Path
 from json import dumps
-
-# parameters
-
-NUM_KEYS = 1
-KEYS_DIR = Path.cwd() / 'keys'
+from constants import NUM_KEYS, KEYS_DIR
 
 # key generation utils
 

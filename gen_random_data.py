@@ -1,14 +1,12 @@
-import os
-from pathlib import Path
+from os import system, urandom
+from constants import NUM_DATA, DATA_DIR
 
-NUM_DATA = 10
-
-def write_file(fname:str, contents: str):
-    fpath = Path.cwd() / "data" / fname
+def write_file(fname: str, contents: str):
+    fpath = DATA_DIR / fname
     if not fpath.exists():
         if not fpath.parent.exists():
-            os.system(f"mkdir {fpath.parent}")
-        os.system(f"touch {fpath}")
+            system(f"mkdir {fpath.parent}")
+        system(f"touch {fpath}")
     with fpath.open("w", encoding="utf-8") as f:
         f.write(contents)
         f.close()
@@ -16,5 +14,5 @@ def write_file(fname:str, contents: str):
 for i in range(NUM_DATA):
     size = i * 100 + 100
     fname = f"{i}_{size}"
-    write_file(fname, os.urandom(size).hex())
+    write_file(fname, urandom(size).hex())
     
