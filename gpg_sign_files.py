@@ -1,7 +1,7 @@
 from os import system, listdir
 from pathlib import Path
 from timeit import timeit
-from constants import DATA_DIR, KEYS_DIR, SIGS_DIR
+from constants import DATA_DIR, KEYS_DIR, SIGS_DIR, PROTECTED_IDS, PROTECTED_NAMES
 
 all_keys_path = KEYS_DIR / "all_keys"
 
@@ -17,6 +17,9 @@ def get_pwd(key_file_lines: "list[str]") -> str:
             pwd = line.split(":")[1].strip()
     return pwd
 
+def unprotected_key(key_name: str) -> bool:
+    return all([not key_name.startswith(pname) for pname in PROTECTED_NAMES])
+
 def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
     system(f'gpg -k > {all_keys_path}')
     with all_keys_path.open("r") as f:
@@ -24,11 +27,11 @@ def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
         # get key ids
         lines_ids = filter(lambda s: s.startswith(" "), lines)
         lines_ids = [line.strip() for line in lines_ids]
-        key_ids = filter(lambda s: s != "" and s != "DFCC27E65A41EC52EA7C69AC4D83E4285EECC440", lines_ids)
+        key_ids = filter(lambda s: s not in PROTECTED_IDS, lines_ids)
         # get key file paths
         key_files = filter(lambda s: s.startswith("uid"), lines)
         key_files = [key_file.split("<")[1].split(">")[0] for key_file in key_files]
-        key_files = filter(lambda s: not s.startswith("flores"), key_files)
+        key_files = filter(unprotected_key, key_files)
         key_paths = [KEYS_DIR / get_key_type(key_file) / key_file for key_file in key_files]
     return list(zip(key_ids, key_paths))
 
