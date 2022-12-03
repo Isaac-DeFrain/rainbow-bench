@@ -1,18 +1,13 @@
-from os import system, urandom
-from constants import NUM_DATA, DATA_DIR
+'''
+Generate random data of various sizes to sign
+'''
 
-def write_file(fname: str, contents: str):
-    fpath = DATA_DIR / fname
-    if not fpath.exists():
-        if not fpath.parent.exists():
-            system(f"mkdir {fpath.parent}")
-        system(f"touch {fpath}")
-    with fpath.open("w", encoding="utf-8") as f:
-        f.write(contents)
-        f.close()
+from file_ops import *
+from constants import *
+from os import urandom
 
-for i in range(NUM_DATA):
-    size = i * 100 + 100
-    fname = f"{i}_{size}"
-    write_file(fname, urandom(size).hex())
-    
+if __name__ == "__main__":
+    for i in range(NUM_DATA):
+        size = i * 100 + 100
+        fpath = DATA_DIR / f"{i}_{size}"
+        write_file(fpath, urandom(size).hex())
