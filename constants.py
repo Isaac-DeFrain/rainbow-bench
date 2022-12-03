@@ -1,4 +1,16 @@
-from pathlib import Path
+import pathlib as pl
+
+# TODO key lengths
+
+KEYS = {
+#    'RSA'   : [1024, 2048, 3072, 4096],
+#    'ELG'   : [1024, 2048, 3072, 4096],
+    'DSA'   : [896, 1024],
+#### TODO: actual sizes of DSA keys
+#    'ECDH'  : [1024, 2048, 3072, 4096],
+#    'ECDSA' : [1024, 2048, 3072, 4096],
+#    'EDDSA' : [1024, 2048, 3072, 4096],
+}
 
 # test parameters
 
@@ -14,25 +26,25 @@ Number of keys per type and length
 
 # dir constants
 
-DATA_DIR = Path.cwd() / "data"
+DATA_DIR = pl.Path.cwd() / "data"
 '''
 Data directory path
 '''
 
-KEYS_DIR = Path.cwd() / 'keys'
+KEYS_DIR = pl.Path.cwd() / 'keys'
 '''
 Keys directory path
 '''
 
-SIGS_DIR = Path.cwd() / "sigs"
+SIGS_DIR = pl.Path.cwd() / "sigs"
 '''
 Sigs directory path
 '''
 
 # gpg config paths
 
-GPG_CONF_PATH = Path("~/.gnupg/gpg.conf")
-GPG_AGENT_CONF_PATH = Path("~/.gnupg/gpg-agent.conf")
+GPG_CONF_PATH = pl.Path("~/.gnupg/gpg.conf")
+GPG_AGENT_CONF_PATH = pl.Path("~/.gnupg/gpg-agent.conf")
 
 # protected gpg keys
 
@@ -42,7 +54,7 @@ GPG key names we don't want to delete
 '''
 
 PROTECTED_IDS = {
-    "",
+    "", # added for filter
     "DFCC27E65A41EC52EA7C69AC4D83E4285EECC440",
     "C47A8F3A21AC5BE14F6A9CADD53C7FEBADF65F26",
     "72FA8A68E358DD71F225C2734742109AD8D13E4C",
