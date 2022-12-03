@@ -20,12 +20,14 @@ def is_unprotected_key(key_name: str) -> bool:
 def get_full_key_name(key_file: str) -> str:
     return key_file.split("<")[1].split(">")[0]
 
-def mk_path(dir: Path, key_name: str) -> Path:
-    return dir / get_key_type(key_name) / key_name
+def mk_key_path(key_name: str) -> Path:
+    return KEYS_DIR / get_key_type(key_name) / key_name
 
 def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
     all_keys_path = KEYS_DIR / "all_keys"
     # print gpg keys to all_keys_path
+    if not KEYS_DIR.exists():
+        system(f"mkdir {KEYS_DIR}")
     system(f'gpg -k > {all_keys_path}')
     with all_keys_path.open("r") as f:
         lines = f.readlines()
@@ -37,7 +39,7 @@ def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
         key_files = filter(lambda s: s.startswith("uid"), lines)
         key_files = [get_full_key_name(key_file) for key_file in key_files]
         key_files = filter(is_unprotected_key, key_files)
-        key_paths = [mk_path(key_file) for key_file in key_files]
+        key_paths = [mk_key_path(key_file) for key_file in key_files]
     return list(zip(key_ids, key_paths))
 
 def sign(fname: str, key_id: str, sig_path: Path, pwd: str):
