@@ -70,6 +70,15 @@ def key_gen(fpath: Path):
     '''
     system(f'gpg --batch --generate-key {fpath}')
 
+def key_groups(files: "list[str]", key_type: str) -> "list[tuple[int, list[str]]]":
+    return list(map(lambda n: (n, list(filter(lambda fname: fname.split("_")[1] == str(n), files))), keys[key_type]))
+
+def init_dict(dict: "dict[int, list[str]]", n: int):
+    try: 
+        dict[n]
+    except KeyError:
+        dict[n] = []
+
 # generate key files
 
 for key_type in keys.keys():
@@ -79,20 +88,15 @@ for key_type in keys.keys():
 
 # generate keys from files
 
-key_dirs = filter(is_key_dir, listdir(KEYS_DIR))
-
 times = {}
 
-for key_type in key_dirs:
+for key_type in filter(is_key_dir, listdir(KEYS_DIR)):
     path = KEYS_DIR / key_type
     keyfiles = listdir(path)
-    groups = map(lambda n: (n, list(filter(lambda fname: fname.split("_")[1] == str(n), keyfiles))), keys[key_type])
+    groups = key_groups(keyfiles, key_type)
     for n, key_files in groups:
         for key_file in key_files:
-            try: 
-                times[n]
-            except KeyError:
-                times[n] = []
+            init_dict(times, n)
             times[n].append(timeit(lambda: key_gen(path / key_file), number=1))
     fpath = KEYS_DIR / f"{key_type}_stats.json"
     if not fpath.exists():

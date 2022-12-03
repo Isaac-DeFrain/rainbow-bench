@@ -11,7 +11,11 @@ verify_path = SIGS_DIR / "verify"
 def get_key_len(fname: str) -> str:
     return fname.split("_")[1]
 
-#### TODO: Do append corrently
+def is_sig_dir(fname: str) -> bool:
+    fpath = SIGS_DIR / fname
+    return fpath.is_dir()
+
+#### TODO: Do append correctly
 
 def verify(fname: str, key_id: str, sig_type: str):
     system(f"gpg --batch --yes -u {key_id} --verify {SIGS_DIR / sig_type / fname} >> {verify_path}")
@@ -21,7 +25,9 @@ if not verify_path.exists():
 
 times = {}
 
-for sig_type in sig_types:
+# TODO collect and write stats
+
+for sig_type in filter(is_sig_dir, sig_types):
     sig_dir = SIGS_DIR / sig_type
     for sig in listdir(sig_dir):
         key_name = sig.split("-")[0]
@@ -29,18 +35,17 @@ for sig_type in sig_types:
             if key_name == key_path.name:
                 timeit(lambda: verify(sig, key_id, sig_type), number = 1)
 
-
-    groups = map(lambda n: (n, list(filter(lambda fname: fname.split("_")[1] == str(n), keyfiles))), keys[dir_name])
-    for n, key_files in groups:
-        for key_file in key_files:
-            try: 
-                times[n]
-            except KeyError:
-                times[n] = []
-            times[n].append(timeit(lambda: key_gen(path / key_file), number=1))
-    fpath = KEYS_DIR / f"{key_type}_stats.json"
-    if not fpath.exists():
-        system(f"touch {fpath}")
-    with fpath.open("w") as f:
-        f.write(dumps(times, indent=4))
-        f.close()
+    # groups = map(lambda n: (n, list(filter(lambda fname: fname.split("_")[1] == str(n), keyfiles))), keys[dir_name])
+    # for n, key_files in groups:
+    #     for key_file in key_files:
+    #         try: 
+    #             times[n]
+    #         except KeyError:
+    #             times[n] = []
+    #         times[n].append(timeit(lambda: key_gen(path / key_file), number=1))
+    # fpath = KEYS_DIR / f"{key_type}_stats.json"
+    # if not fpath.exists():
+    #     system(f"touch {fpath}")
+    # with fpath.open("w") as f:
+    #     f.write(dumps(times, indent=4))
+    #     f.close()
