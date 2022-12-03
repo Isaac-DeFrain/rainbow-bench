@@ -7,13 +7,8 @@ all_keys_path = KEYS_DIR / "all_keys"
 
 data = sorted(listdir(DATA_DIR))
 
-#### Ensure only keys needed are available in key ring; TODO: trustdb
-
 def get_key_type(fname: str) -> str:
     return fname.split("_")[0]
-
-def get_key_len(fname: str) -> str:
-    return fname.split("_")[1]
 
 def get_pwd(key_file_lines: "list[str]") -> str:
     pwd = ""
@@ -40,7 +35,7 @@ def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
 key_ids_and_paths = get_key_ids_and_paths()
 
 def sign(fname: str, key_id: str, sig_path: Path, pwd: str):
-    system(f"gpg --batch -u {key_id} -o {sig_path} --passphrase {pwd} --sign {DATA_DIR / fname}")
+    system(f"echo {pwd} | gpg --batch --yes -u {key_id} -o {sig_path} --passphrase-fd 0 --sign {DATA_DIR / fname}")
 
 if not SIGS_DIR.exists():
     system(f"mkdir {SIGS_DIR}")
@@ -54,4 +49,4 @@ for datum in data:
             system(f"mkdir {sig_path.parent}")
         timeit(lambda: sign(datum, key_id, sig_path, pwd), number = 1)
 
-#### TODO: sign/verify in right directory; GPG DSA key sizes
+#### TODO: GPG DSA key sizes

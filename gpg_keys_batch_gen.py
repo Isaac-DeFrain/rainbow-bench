@@ -70,16 +70,6 @@ def key_gen(fpath: Path):
     '''
     system(f'gpg --batch --generate-key {fpath}')
 
-##########################################
-
-# Notes
-
-# RSA keys: 1024-4096 bits
-
-# --verify
-
-##########################################
-
 # generate key files
 
 for key_type in keys.keys():
@@ -93,10 +83,10 @@ key_dirs = filter(is_key_dir, listdir(KEYS_DIR))
 
 times = {}
 
-for dir_name in key_dirs:
-    path = KEYS_DIR / dir_name
+for key_type in key_dirs:
+    path = KEYS_DIR / key_type
     keyfiles = listdir(path)
-    groups = map(lambda n: (n, list(filter(lambda fname: fname.split("_")[1] == str(n), keyfiles))), keys[dir_name])
+    groups = map(lambda n: (n, list(filter(lambda fname: fname.split("_")[1] == str(n), keyfiles))), keys[key_type])
     for n, key_files in groups:
         for key_file in key_files:
             try: 
@@ -104,7 +94,7 @@ for dir_name in key_dirs:
             except KeyError:
                 times[n] = []
             times[n].append(timeit(lambda: key_gen(path / key_file), number=1))
-    fpath = KEYS_DIR / f"{dir_name}_stats.json"
+    fpath = KEYS_DIR / f"{key_type}_stats.json"
     if not fpath.exists():
         system(f"touch {fpath}")
     with fpath.open("w") as f:
