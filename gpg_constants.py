@@ -3,6 +3,7 @@ GPG constants
 '''
 
 import os
+import json
 import key_ops
 import pathlib as pl
 
@@ -16,8 +17,11 @@ Keys directory path
 GPG_CONF_PATH = pl.Path("~/.gnupg/gpg.conf")
 GPG_AGENT_CONF_PATH = pl.Path("~/.gnupg/gpg-agent.conf")
 
-def key_names_and_ids() -> "tuple[set[str], set[str]]":
+protected_gpg_keys_path = KEYS_DIR / "protected_gpg_keys.json"
+
+def key_names_and_ids():
     gpg_keys_path = KEYS_DIR / "og_gpg_keys"
+    protected_gpg_keys_dict = {}
     # print gpg keys to all_keys_path
     if not KEYS_DIR.exists():
         os.system(f"mkdir {KEYS_DIR}")
@@ -30,16 +34,32 @@ def key_names_and_ids() -> "tuple[set[str], set[str]]":
         # get key ids
         lines_ids = filter(lambda s: s.startswith(" "), lines)
         key_ids = [line.strip() for line in lines_ids]
-    return (set(key_names), set(key_ids))
+    protected_gpg_keys_dict["names"] = key_names
+    protected_gpg_keys_dict["ids"] = key_ids
+    with protected_gpg_keys_path.open("w", encoding="utf-8") as f:
+        f.write(json.dumps(protected_gpg_keys_dict, indent=4))
+        f.close()
+
+key_names_and_ids()
+
+def protected_gpg_ids() -> "set[str]":
+    with protected_gpg_keys_path.open("r", encoding="utf-8") as f:
+        dict = json.load(f)
+        return dict["ids"]
+
+def protected_gpg_names() -> "set[str]":
+    with protected_gpg_keys_path.open("r", encoding="utf-8") as f:
+        dict = json.load(f)
+        return dict["names"]
 
 # protected gpg keys
 
-PROTECTED_GPG_NAMES = key_names_and_ids()[0]
+PROTECTED_GPG_NAMES = set(protected_gpg_names())
 '''
 GPG key names we don't want to delete
 '''
 
-PROTECTED_GPG_IDS = key_names_and_ids()[1]
+PROTECTED_GPG_IDS = set(protected_gpg_ids())
 '''
 GPG key ids we don't want to delete
 '''
