@@ -6,6 +6,7 @@ from benchmark import *
 from key_ops import *
 from constants import *
 from pathlib import Path
+from gpg_constants import *
 from secrets import token_hex
 from os import system, listdir
 from file_ops import write_file
