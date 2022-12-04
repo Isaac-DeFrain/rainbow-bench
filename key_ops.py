@@ -16,6 +16,9 @@ def get_key_len(fname: str) -> int:
     '''
     return int(fname.split("_")[1])
 
+def get_full_key_name(key_file: str) -> str:
+    return key_file.split("<")[1].split(">")[0]
+
 def key_groups(fnames: "list[str]", key_type: str) -> "list[tuple[int, list[str]]]":
     '''
     Association list: key length -> list of key file names

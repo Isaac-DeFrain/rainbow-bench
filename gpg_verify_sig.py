@@ -2,15 +2,15 @@
 Benchmark GPG verify signatures
 '''
 
-from benchmark import *
 from key_ops import *
+from benchmark import *
 from constants import *
 from os import listdir, system
 from file_ops import write_file
 from gpg_sign_files import get_key_ids_and_paths
 
-def get_key_len(fname: str) -> str:
-    return fname.split("_")[1]
+def get_key_len(fname: str) -> int:
+    return int(fname.split("_")[1])
 
 def is_sig_dir(fname: str) -> bool:
     fpath = SIGS_DIR / fname
