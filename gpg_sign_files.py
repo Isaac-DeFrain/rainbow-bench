@@ -2,26 +2,32 @@
 Benchmark GPG signatures
 '''
 
-from benchmark import *
 from key_ops import *
 from file_ops import *
+from benchmark import *
 from constants import *
 from pathlib import Path
+from gpg_constants import *
 from os import system, listdir
 
 def get_pwd(key_file_lines: "list[str]"):
+    res = ""
     for line in key_file_lines:
         if line.startswith("Passphrase"):
-            return line.split(":")[1].strip()
+            res = line.split(":")[1].strip()
+    return res
 
 def is_unprotected_key(key_name: str) -> bool:
-    return all([not key_name.startswith(pname) for pname in PROTECTED_NAMES])
+    return all([not key_name.startswith(pname) for pname in PROTECTED_GPG_NAMES])
 
 def get_full_key_name(key_file: str) -> str:
     return key_file.split("<")[1].split(">")[0]
 
 def mk_key_path(key_name: str) -> Path:
     return KEYS_DIR / get_key_type(key_name) / key_name
+
+def sign_stats_dir(sig_type: str) -> Path:
+    return SIGS_DIR / f"{sig_type}_sign_stats.json"
 
 def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
     all_keys_path = KEYS_DIR / "all_keys"
@@ -34,7 +40,7 @@ def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
         # get key ids
         lines_ids = filter(lambda s: s.startswith(" "), lines)
         lines_ids = [line.strip() for line in lines_ids]
-        key_ids = filter(lambda s: s not in PROTECTED_IDS, lines_ids)
+        key_ids = filter(lambda s: s not in PROTECTED_GPG_IDS, lines_ids)
         # get key file paths
         key_files = filter(lambda s: s.startswith("uid"), lines)
         key_files = [get_full_key_name(key_file) for key_file in key_files]
@@ -64,4 +70,4 @@ if __name__ == "__main__":
             with key_path.open("r", encoding="utf-8") as f:
                 pwd = get_pwd(f.readlines())
             benchmark(sign(datum, key_id, sig_path, pwd), times, n)
-        write_file(SIGS_DIR / f"{sig_type}_sign_stats.json", dumps(times, indent=4))
+        write_file(sign_stats_dir(sig_type), dumps(times, indent=4))
