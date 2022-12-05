@@ -2,6 +2,13 @@ from os import system
 from constants import *
 from pathlib import Path
 
+def mkdir(dir: Path):
+    '''
+    Create the directory if it doesn't exist already
+    '''
+    if not dir.exists():
+        system(f"mkdir {dir}")
+
 def mk_path(fpath: Path):
     parents = fpath.parents
     idx = parents.index(Path.cwd())

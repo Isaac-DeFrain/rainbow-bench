@@ -6,11 +6,11 @@ from benchmark import *
 from key_ops import *
 from constants import *
 from pathlib import Path
-from gpg_constants import *
 from secrets import token_hex
 from os import system, listdir
 from file_ops import write_file
 from key_file_template import *
+from gpg_constants import KEYS_DIR
 
 # key generation utils
 
@@ -26,6 +26,9 @@ def key_gen_file(key_type: str, key_len: int, num: int):
     pwd = token_hex(32)
     contents = key_file_template(key_type, key_len, num, pwd)
     write_file(fpath, contents)
+
+def stats_file(key_type: str):
+    return KEYS_DIR / f"{key_type}_stats.json"
 
 def key_gen(fpath: Path):
     '''
@@ -43,10 +46,10 @@ if __name__ == "__main__":
 
     # generate keys from files
     for key_type in filter(is_key_dir, listdir(KEYS_DIR)):
-        path = KEYS_DIR / key_type
-        groups = key_groups(listdir(path), key_type)
+        key_type_dir = KEYS_DIR / key_type
+        groups = key_groups(listdir(key_type_dir), key_type)
         for n, key_files in groups:
             for key_file in key_files:
-                key_path = path / key_file
+                key_path = key_type_dir / key_file
                 benchmark(key_gen(key_path), times, n)
-        write_file(KEYS_DIR / f"{key_type}_stats.json", dumps(times, indent=4))
+        write_file(stats_file(key_type), dumps(times, indent=4))
