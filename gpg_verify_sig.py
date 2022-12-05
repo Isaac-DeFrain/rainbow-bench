@@ -33,9 +33,9 @@ def verify(fname: str, key_id: str, sig_type: str):
     system(f"gpg --batch --yes -u {key_id} --verify {SIGS_DIR / sig_type / fname} >> {verify_path}")
 
 if __name__ == "__main__":
-    times = {}
     write_file(verify_path)
     for sig_type in filter(is_sig_dir, listdir(SIGS_DIR)):
+        key_type_times = {}
         sig_type_dir = SIGS_DIR / sig_type
         for sig_name in filter(is_sig_file, listdir(sig_type_dir)):
             # sig_name = {key_name}-{datum}.sig
@@ -43,5 +43,5 @@ if __name__ == "__main__":
             n = get_key_len(key_name)
             for key_id, key_path in get_key_ids_and_paths():
                 if key_name == key_path.name:
-                    benchmark(verify(sig_name, key_id, sig_type), times, n)
-        write_file(stats_file(sig_type), dumps(times, indent=4))
+                    benchmark(verify(sig_name, key_id, sig_type), key_type_times, n)
+        write_file(stats_file(sig_type), dumps(key_type_times, indent=4))

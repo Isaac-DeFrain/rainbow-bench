@@ -21,23 +21,24 @@ GPG_AGENT_CONF_PATH = pl.Path("~/.gnupg/gpg-agent.conf")
 protected_gpg_keys_path = KEYS_DIR / "protected_gpg_keys.json"
 
 def key_names_and_ids():
-    gpg_keys_path = KEYS_DIR / "og_gpg_keys"
+    og_gpg_keys_path = KEYS_DIR / "og_gpg_keys"
     protected_gpg_keys_dict = {}
-    # print gpg keys to all_keys_path
-    os.system(f'gpg -k > {gpg_keys_path}')
-    with gpg_keys_path.open("r") as f:
-        lines = f.readlines()
-        # get key names
-        key_files = filter(lambda s: s.startswith("uid"), lines)
-        key_names = [key_ops.get_full_key_name(key_file) for key_file in key_files]
-        # get key ids
-        lines_ids = filter(lambda s: s.startswith(" "), lines)
-        key_ids = [line.strip() for line in lines_ids]
-    protected_gpg_keys_dict["names"] = key_names
-    protected_gpg_keys_dict["ids"] = key_ids
-    with protected_gpg_keys_path.open("w", encoding="utf-8") as f:
-        f.write(json.dumps(protected_gpg_keys_dict, indent=4))
-        f.close()
+    # print og gpg keys to all_keys_path
+    if not og_gpg_keys_path.exists():
+        os.system(f'gpg -k > {og_gpg_keys_path}')
+        with og_gpg_keys_path.open("r") as f:
+            lines = f.readlines()
+            # get key names
+            key_files = filter(lambda s: s.startswith("uid"), lines)
+            key_names = [key_ops.get_full_key_name(key_file) for key_file in key_files]
+            # get key ids
+            lines_ids = filter(lambda s: s.startswith(" "), lines)
+            key_ids = [line.strip() for line in lines_ids]
+        protected_gpg_keys_dict["names"] = key_names
+        protected_gpg_keys_dict["ids"] = key_ids
+        with protected_gpg_keys_path.open("w", encoding="utf-8") as f:
+            f.write(json.dumps(protected_gpg_keys_dict, indent=4))
+            f.close()
 
 def protected_gpg_ids() -> "set[str]":
     with protected_gpg_keys_path.open("r", encoding="utf-8") as f:

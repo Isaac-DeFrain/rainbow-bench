@@ -3,10 +3,10 @@ import pathlib as pl
 # TODO key lengths
 
 KEYS = {
-#    'RSA'   : [1024, 2048, 3072, 4096],
+    'RSA'   : [1024, 2048, 3072, 4096],
 #    'ELG'   : [1024, 2048, 3072, 4096],
     'DSA'   : [768, 896, 1024],
-#### TODO: actual sizes of DSA keys
+#### TODO: actual sizes of DSA, and other keys
 #    'ECDH'  : [1024, 2048, 3072, 4096],
 #    'ECDSA' : [1024, 2048, 3072, 4096],
 #    'EDDSA' : [1024, 2048, 3072, 4096],

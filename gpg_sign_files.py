@@ -55,19 +55,22 @@ def sign(fname: str, key_id: str, sig_path: Path, pwd: str):
     system(f"echo {pwd} | gpg --batch --yes -u {key_id} -o {sig_path} --passphrase-fd 0 --sign {DATA_DIR / fname}")
 
 if __name__ == "__main__":
+    mkdir(SIGS_DIR)
     times = {}
-    if not SIGS_DIR.exists():
-        system(f"mkdir {SIGS_DIR}")
     for key_id, key_path in get_key_ids_and_paths():
-        name = key_path.name
-        n = get_key_len(name)
-        sig_type = get_key_type(name)
+        key_name = key_path.name
+        n = get_key_len(key_name)
+        sig_type = get_key_type(key_name)
         sig_type_dir = SIGS_DIR / sig_type
         for datum in sorted(listdir(DATA_DIR)):
-            sig_path = sig_type_dir / f"{name}-{datum}.sig"
-            if not sig_type_dir.exists():
-                system(f"mkdir {sig_type_dir}")
+            sig_path = sig_type_dir / f"{key_name}-{datum}.sig"
+            mkdir(sig_type_dir)
             with key_path.open("r", encoding="utf-8") as f:
                 pwd = get_pwd(f.readlines())
-            benchmark(sign(datum, key_id, sig_path, pwd), times, n)
-        write_file(stats_file(sig_type), dumps(times, indent=4))
+            try:
+                times[sig_type]
+            except KeyError:
+                times[sig_type] = {}
+            benchmark(sign(datum, key_id, sig_path, pwd), times[sig_type], n)
+    for key_type in KEYS.keys():
+        write_file(stats_file(key_type), dumps(times[key_type], indent=4))

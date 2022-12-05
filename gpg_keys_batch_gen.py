@@ -28,7 +28,7 @@ def key_gen_file(key_type: str, key_len: int, num: int):
     write_file(fpath, contents)
 
 def stats_file(key_type: str):
-    return KEYS_DIR / f"{key_type}_stats.json"
+    return KEYS_DIR / f"{key_type}_gen_stats.json"
 
 def key_gen(fpath: Path):
     '''
@@ -37,7 +37,6 @@ def key_gen(fpath: Path):
     system(f'gpg --batch --generate-key {fpath}')
 
 if __name__ == "__main__":
-    times = {}
     # generate key files
     for key_type in KEYS.keys():
         for num in range(NUM_KEYS):
@@ -46,10 +45,11 @@ if __name__ == "__main__":
 
     # generate keys from files
     for key_type in filter(is_key_dir, listdir(KEYS_DIR)):
+        key_type_times = {}
         key_type_dir = KEYS_DIR / key_type
         groups = key_groups(listdir(key_type_dir), key_type)
         for n, key_files in groups:
             for key_file in key_files:
                 key_path = key_type_dir / key_file
-                benchmark(key_gen(key_path), times, n)
-        write_file(stats_file(key_type), dumps(times, indent=4))
+                benchmark(key_gen(key_path), key_type_times, n)
+        write_file(stats_file(key_type), dumps(key_type_times, indent=4))
