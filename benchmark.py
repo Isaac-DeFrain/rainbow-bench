@@ -1,5 +1,5 @@
 '''
-Dict operations
+Benchmark operations
 '''
 
 import timeit as tm
@@ -7,7 +7,7 @@ from json import dumps
 
 dumps = dumps
 
-def init_dict(dict: "dict[int, list[str]]", n: int):
+def init_dict(dict: "dict[int, list[float]]", n: int):
     try: 
         dict[n]
     except KeyError:
