@@ -7,8 +7,8 @@ from file_ops import *
 from benchmark import *
 from constants import *
 from pathlib import Path
-from gpg_constants import *
 from os import system, listdir
+from gpg_constants import KEYS_DIR, PROTECTED_GPG_NAMES, PROTECTED_GPG_IDS
 
 def get_pwd(key_file_lines: "list[str]"):
     res = ""
@@ -26,7 +26,7 @@ def get_full_key_name(key_file: str) -> str:
 def mk_key_path(key_name: str) -> Path:
     return KEYS_DIR / get_key_type(key_name) / key_name
 
-def sign_stats_dir(sig_type: str) -> Path:
+def stats_file(sig_type: str) -> Path:
     return SIGS_DIR / f"{sig_type}_sign_stats.json"
 
 def get_key_ids_and_paths() -> "list[tuple[str, Path]]":
@@ -70,4 +70,4 @@ if __name__ == "__main__":
             with key_path.open("r", encoding="utf-8") as f:
                 pwd = get_pwd(f.readlines())
             benchmark(sign(datum, key_id, sig_path, pwd), times, n)
-        write_file(sign_stats_dir(sig_type), dumps(times, indent=4))
+        write_file(stats_file(sig_type), dumps(times, indent=4))

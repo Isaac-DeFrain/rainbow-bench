@@ -5,6 +5,7 @@ Benchmark GPG verify signatures
 from key_ops import *
 from benchmark import *
 from constants import *
+from pathlib import Path
 from os import listdir, system
 from file_ops import write_file
 from gpg_sign_files import get_key_ids_and_paths
@@ -20,9 +21,10 @@ def is_sig_file(fname: str) -> bool:
     suffix = fname.split(".")[-1]
     return suffix == "sig"
 
-verify_path = SIGS_DIR / "verify"
+def stats_file(sig_type: str) -> Path:
+    return SIGS_DIR / f"{sig_type}_verify_stats.json"
 
-#### TODO: Do append correctly
+verify_path = SIGS_DIR / "verify"
 
 def verify(fname: str, key_id: str, sig_type: str):
     '''
@@ -42,4 +44,4 @@ if __name__ == "__main__":
             for key_id, key_path in get_key_ids_and_paths():
                 if key_name == key_path.name:
                     benchmark(verify(sig_name, key_id, sig_type), times, n)
-        write_file(SIGS_DIR / f"{sig_type}_verify_stats.json", dumps(times, indent=4))
+        write_file(stats_file(sig_type), dumps(times, indent=4))
