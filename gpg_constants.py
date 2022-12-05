@@ -5,6 +5,7 @@ GPG constants
 import os
 import json
 import key_ops
+import file_ops
 import pathlib as pl
 
 KEYS_DIR = pl.Path.cwd() / 'keys'
@@ -23,8 +24,6 @@ def key_names_and_ids():
     gpg_keys_path = KEYS_DIR / "og_gpg_keys"
     protected_gpg_keys_dict = {}
     # print gpg keys to all_keys_path
-    if not KEYS_DIR.exists():
-        os.system(f"mkdir {KEYS_DIR}")
     os.system(f'gpg -k > {gpg_keys_path}')
     with gpg_keys_path.open("r") as f:
         lines = f.readlines()
@@ -40,8 +39,6 @@ def key_names_and_ids():
         f.write(json.dumps(protected_gpg_keys_dict, indent=4))
         f.close()
 
-key_names_and_ids()
-
 def protected_gpg_ids() -> "set[str]":
     with protected_gpg_keys_path.open("r", encoding="utf-8") as f:
         dict = json.load(f)
@@ -51,6 +48,9 @@ def protected_gpg_names() -> "set[str]":
     with protected_gpg_keys_path.open("r", encoding="utf-8") as f:
         dict = json.load(f)
         return dict["names"]
+
+file_ops.mkdir(KEYS_DIR)
+key_names_and_ids()
 
 # protected gpg keys
 
