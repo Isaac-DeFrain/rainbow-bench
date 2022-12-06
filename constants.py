@@ -19,7 +19,7 @@ NUM_DATA : int = 10
 Number of randomly generated data files
 '''
 
-NUM_KEYS : int = 1
+NUM_KEYS : int = 2
 '''
 Number of keys per type and length
 '''
