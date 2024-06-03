@@ -1,15 +1,6 @@
 # Cryptography Benchmark Experiment: 
 ## Evaluating Rainbow keys: size, signature and verification comparison to RSA and DSA
 
-We conducted a rainbow benchmarking repository experiment to compare key sizes, key generation, signature, and verification in rainbow to RSA and DSA in the GPG/PGP standard.
-
-We expected the following: 
-
-- Large key sizes, slower key generation and quick signatures and verification for rainbow
-- Faster key generation and comparable signatures and verification for RSA and DSA
-
-## Conclusion
-
 After conducting a rainbow benchmarking repository experiment to compare key sizes, key generation, signature, and verification in rainbow to RSA and DSA in the GPG/PGP standard, we can conlcude that a larger sample should be tested and additional understanding of the GPG/PGP key generation, signature, and verification is needed to accurately assess the data we gathered.
 
 90 keys were analyzed in this data after we created 10 keys for each of the following key types:
